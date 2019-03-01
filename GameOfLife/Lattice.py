@@ -6,7 +6,7 @@ from PIL import Image
 
 class lattice(object):
     """
-    Lattice object for the Ising model with built in dynamics and periodic boundary
+    Lattice object for the Game of Life with built in dynamics and periodic boundary
     conditions
     """
     def __init__(self, xDim=50, yDim=0, initialState=None, measure=False):
