@@ -33,6 +33,13 @@ def readArgs(args, params):
             except:
                 print("Unrecognised value for -N.")
                 exit()
+        elif args[i] in ["-R", "-r"]:
+            try:
+                updates["UpdateRate"] = int(float(args[i+1]))
+                i += 2
+            except:
+                print("Unrecognised value for -R.")
+                exit()
         elif args[i] in ["-y", "-Y"]:
             try:
                 updates["Y Dimension"] = int(float(args[i+1]))
@@ -60,6 +67,20 @@ def readArgs(args, params):
                 i += 2
             except:
                 print("Unrecognised value for -I.")
+                exit()
+        elif args[i] in ["-M", "-m"]:
+            try:
+                if args[i+1] in ["Y", "y"]:
+                    updates["Measure"] = True
+                    i += 2
+                elif args[i+1] in ["N", "n"]:
+                    updates["Measure"] = False
+                    i += 2
+                else:
+                    print("-M should be followed by 'Y' or 'N'.")
+                    exit()
+            except:
+                print("Error with -M tag.")
                 exit()
         else:
             print("Key {} not recognised. Ignoring.".format(args[i]))

@@ -9,7 +9,7 @@ class lattice(object):
     Lattice object for the Ising model with built in dynamics and periodic boundary
     conditions
     """
-    def __init__(self, xDim=50, yDim=0, initialState=None):
+    def __init__(self, xDim=50, yDim=0, initialState=None, measure=False):
         """
         Constructor for the lattice object. Defaults to square lattice.
         :param xDim: The x dimension of the lattice. Defaults to 50.
@@ -36,9 +36,11 @@ class lattice(object):
         else:
             print("Error. Input file {} not valid. Require txt or png file.".initialState)
             exit()
-        print("HJK " + str(self.xDim))
         self.size = self.xDim*self.yDim
-        
+        self.measure=measure
+        if self.measure:
+            self.COMList = []
+            self.tList = []
         print(self)
     
     def latFromTXT(self, path):
@@ -84,6 +86,9 @@ class lattice(object):
                 else: newLat[i, j] = self.lattice[i, j]
         self.lattice = newLat                                                       # Update lattice.
         self.t += 1                                                                 # Increase time.    
+        if self.measure:
+            self.COMList.append(self.getCoM())
+            self.tList.append(self.t)
                 
     def liveNeighbours(self, i, j):
         """
@@ -99,6 +104,21 @@ class lattice(object):
         # Don't count self
         Num -= self.lattice[i, j]
         return(Num)
+
+    def getCoM(self):
+        """
+        Get the centre of mass of the system, i.e. the average x and y coordinate of live sites.
+        :return x: The x coordinate of the c.o.m
+        :return y: The y coordinate of the c.o.m
+        """
+        # Get all indices of nonzero sites, average each to get 2D position of C.o.M
+        inds = np.argwhere(self.lattice > 0)
+        # If both sides of either boundary are occupied then it is crossing, return NaNs
+        if (0 in inds[:,0] and (self.xDim-1) in inds[:,0]) or (0 in inds[:,1] and (self.yDim-1) in inds[:,1]):
+            com = np.array([np.nan, np.nan])
+        else:
+            com = inds.mean(axis=0)
+        return(com)
 
     def animate(self, f, tMax):
         if self.t <= tMax:
