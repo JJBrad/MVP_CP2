@@ -19,6 +19,20 @@ def readArgs(args, params):
             except:
                 print("Unrecognised seed.")
                 exit()
+        elif args[i] in ["-e", "-E"]:
+            try:
+                updates["tEquib"] = int(float(args[i+1]))
+                i += 2
+            except:
+                print("Unrecognised value for -E.")
+                exit()
+        elif args[i] in ["-C", "-c"]:
+            try:
+                updates["tCorr"] = int(float(args[i+1]))
+                i += 2
+            except:
+                print("Unrecognised value for -C.")
+                exit()
         elif args[i] in ["-x", "-X"]:
             try:
                 updates["X Dimension"] = int(float(args[i+1]))
@@ -32,13 +46,6 @@ def readArgs(args, params):
                 i += 2
             except:
                 print("Unrecognised value for -N.")
-                exit()
-        elif args[i] in ["-R", "-r"]:
-            try:
-                updates["UpdateRate"] = int(float(args[i+1]))
-                i += 2
-            except:
-                print("Unrecognised value for -R.")
                 exit()
         elif args[i] in ["-y", "-Y"]:
             try:
@@ -63,10 +70,17 @@ def readArgs(args, params):
                 exit()
         elif args[i] in ["-i", "-I"]:
             try:
-                updates["Initial"] = args[i+1]
+                updates["Initial"] = eval(args[i+1])
                 i += 2
             except:
-                print("Unrecognised value for -I.")
+                print("Unrecognised value for -I. Are there spaces?")
+                exit()
+        elif args[i] in ["-p", "-P"]:
+            try:
+                updates["pVals"] = eval(args[i+1])
+                i += 2
+            except:
+                print("Unrecognised value for -p. Are there spaces?")
                 exit()
         elif args[i] in ["-M", "-m"]:
             try:
@@ -81,6 +95,20 @@ def readArgs(args, params):
                     exit()
             except:
                 print("Error with -M tag.")
+                exit()
+        elif args[i] in ["-r", "-R"]:
+            try:
+                updates["RunLabel"] = args[i+1]
+                i += 2
+            except:
+                print("Unrecognised value for -r.")
+                exit()
+        elif args[i] in ["-o", "-O"]:
+            try:
+                updates["outDir"] = args[i+1]
+                i += 2
+            except:
+                print("Unrecognised value for -o.")
                 exit()
         else:
             print("Key {} not recognised. Ignoring.".format(args[i]))
