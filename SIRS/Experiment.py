@@ -48,8 +48,8 @@ with open("{}/Results.csv".format(outDir), "w") as outFile:
 
 # Phase diagram:
 p2 = 0.5
-p1Vals = [float(i)/100. for i in range(0, 101, 5)]
-p3Vals = [float(i)/100. for i in range(0, 101, 5)]
+p1Vals = [float(i)/1000. for i in range(0, 1001, 25)]
+p3Vals = [float(i)/1000. for i in range(0, 1001, 25)]
 runNum = 1
 
 p1Res = []
@@ -100,10 +100,8 @@ for p1 in p1Vals:
         runLat(p1, p2, p3, maxSweeps)
         runNum += 1
 
-p1Bins = [float(p1Vals[i]) - 0.005 for i in range(0, len(p1Vals))]
-p1Bins.append(max(p1Vals) + 0.005)
-p3Bins = [float(p3Vals[i]) - 0.005 for i in range(0, len(p3Vals))]
-p1Bins.append(max(p3Vals) + 0.005)
+p1Bins = [min(p1Vals)-0.005] + [float(p1Vals[i] + p1Vals[i-1])/2. - 0.005 for i in range(1, len(p1Vals))] + [max(p1Vals) + 0.005]
+p3Bins = [min(p3Vals)-0.005] + [float(p3Vals[i] + p3Vals[i-1])/2. - 0.005 for i in range(1, len(p3Vals))] + [max(p3Vals) + 0.005]
 pl.hist2d(p1Res, p3Res, weights=psi, bins=[p1Bins, p3Bins])
 pyplot.xlim(0, 1)
 pyplot.ylim(0, 1)
@@ -171,6 +169,13 @@ for fIm in fracIm:
 err = np.sqrt(varPsiList)/np.sqrt(nList)
 pyplot.errorbar(fracIm, psi, yerr = err, color = "k", ecolor = "k", linestyle = "--", marker = "s", capsize=2)
 pyplot.xlabel("$f_{im}$")
-pyplot.ylabel(r"$\left<psi\right>")
+pyplot.ylabel(r"$\left<psi\right>$")
 pyplot.savefig("{}/ImmuneFraction.png".format(outDir))
 pyplot.clf()
+
+pyplot.errorbar(fracIm, psi, yerr = np.sqrt(varPsiList), color = "k", ecolor = "k", linestyle = "--", marker = "s", capsize=2)
+pyplot.xlabel("$f_{im}$")
+pyplot.ylabel(r"$\left<psi\right>$")
+pyplot.savefig("{}/ImmuneFraction_stDevErrBar.png".format(outDir))
+pyplot.clf()
+

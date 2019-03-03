@@ -69,7 +69,7 @@ class lattice(object):
         """
         Returns string for printing key details of object.
         """
-        return("Array has shape {}, contains {} live cells and {} dead entries.".format(self.lattice.shape, np.count_nonzero(self.lattice == 1), np.count_nonzero(self.lattice == 0)))
+        return("Array has shape {}, contains {} live cells and {} dead cells.".format(self.lattice.shape, np.count_nonzero(self.lattice == 1), np.count_nonzero(self.lattice == 0)))
     
     def next(self):
         """
@@ -114,7 +114,8 @@ class lattice(object):
         # Get all indices of nonzero sites, average each to get 2D position of C.o.M
         inds = np.argwhere(self.lattice > 0)
         # If both sides of either boundary are occupied then it is crossing, return NaNs
-        if (0 in inds[:,0] and (self.xDim-1) in inds[:,0]) or (0 in inds[:,1] and (self.yDim-1) in inds[:,1]):
+        if (((0 in inds[:,0] or 1 in inds[:,0]) and ((self.xDim-1) in inds[:,0] or (self.xDim-2) in inds[:,0]))\
+        or ((0 in inds[:,1] or 1 in inds[:,1]) and ((self.yDim-1) in inds[:,1] or (self.yDim-2) in inds[:,1]))):
             com = np.array([np.nan, np.nan])
         else:
             com = inds.mean(axis=0)
@@ -140,6 +141,7 @@ class lattice(object):
         anim = FuncAnimation(fig, self.animate, tMax, interval=interval, blit=True, repeat=False, fargs=(tMax,))
         pyplot.show()
         
-    #def run(self, tMax=1000):
-    # TODO: Function to run without animating
+    def run(self, tMax=1000):
+        for i in range(0, tMax):
+            self.next()
         

@@ -7,7 +7,7 @@ import os
 from PIL import Image
 
 # make a color map of fixed colors
-cList = ["orange", "white", "red", "black"]
+cList = ["yellow", "orange", "red", "black"]
 cmap = colors.ListedColormap(cList)
 bounds=[-1.5, -0.5, 0.5, 1.5, 2.5]
 norm = colors.BoundaryNorm(bounds, cmap.N)
@@ -93,34 +93,35 @@ class lattice(object):
         """
         Perform one sweep.
         """
-        for s in range(0, self.size):                                     # Each step
-            i = np.random.randint(0, self.xDim)                           # Pick random site
-            j = np.random.randint(0, self.yDim)                           # 
-            if self.lattice[i, j] == 0:                                   # For susceptible sites        
+        for s in range(0, self.size):                                               # Each step
+            i = np.random.randint(0, self.xDim)                                     # Pick random site
+            j = np.random.randint(0, self.yDim)                                     # 
+            if self.lattice[i, j] == 0:                                             # For susceptible sites        
                 NNs = [((i-1)%self.xDim, j), ((i+1)%self.xDim, j),\
-                (i, (j+1)%self.yDim), (i, (j-1)%self.yDim)]               # List of indices of nearest neighbors 
-                infected = False                                          # Originally uninfected
-                for n in range(0, 4):                                     # Go through NNs
-                    if self.lattice[NNs[n]] == 1:                         # If NN infected:
-                        if np.random.rand() < self.p1:                    # Test for infection
-                            infected = True                               #
-                            break                                         # Only test for infection once
-                self.lattice[i, j] = int(infected)                        # Update lattice
-            elif self.lattice[i, j] == 1:                                 # For infected sites
-                if np.random.rand() < self.p2: self.lattice[i, j] = -1    # Test for recovery, recover if passes
-                else: self.lattice[i, j] = 1                              # Otherwise keep infected
-            elif self.lattice[i, j] == -1:                                # For recovered sites
-                if np.random.rand() < self.p3: self.lattice[i, j] = 0     # Test for (and change to) susceptibility
-                else: self.lattice[i, j] = -1                             # Else keep the same
-                                                                          # Immune cells not considered.
-        self.t += 1                                                       # Increase time.
-        if self.t > self.tEquib and self.t % self.tCorr == 0:             # If time is right
-            self.tList.append(self.t)                                     # Update lists
-            self.IList.append(self.getFrac())                             # 
-        if self.getFrac() == 0:                                           # If no infected sites remain
-            self.tList.append(self.t)                                     # Update lists
-            self.IList.append(self.getFrac())                             # 
-            self.stop = True                                              # End run
+                (i, (j+1)%self.yDim), (i, (j-1)%self.yDim)]                         # List of indices of nearest neighbors 
+                infected = False                                                    # Originally uninfected
+                for n in range(0, 4):                                               # Go through NNs
+                    if self.lattice[NNs[n]] == 1:                                   # If NN infected:
+                        if np.random.rand() < self.p1:                              # Test for infection
+                            infected = True                                         #
+                            break                                                   # Only test for infection once
+                self.lattice[i, j] = int(infected)                                  # Update lattice
+            elif self.lattice[i, j] == 1:                                           # For infected sites
+                if np.random.rand() < self.p2: self.lattice[i, j] = -1              # Test for recovery, recover if passes
+                else: self.lattice[i, j] = 1                                        # Otherwise keep infected
+            elif self.lattice[i, j] == -1:                                          # For recovered sites
+                if np.random.rand() < self.p3: self.lattice[i, j] = 0               # Test for (and change to) susceptibility
+                else: self.lattice[i, j] = -1                                       # Else keep the same
+                                                                                    # Immune cells not considered.
+        self.t += 1                                                                 # Increase time.
+        if self.t > self.tEquib and self.t % self.tCorr == 0 and self.measure:    # If time is right
+            self.tList.append(self.t)                                               # Update lists
+            self.IList.append(self.getFrac())                                       # 
+        if self.getFrac() == 0:                                                     # If no infected sites remain
+            if self.measure:                                                        # Update lists if measurements on
+                self.tList.append(self.t)                                           #
+                self.IList.append(self.getFrac())                                   # 
+            self.stop = True                                                        # End run
 
     def getFrac(self):
         """

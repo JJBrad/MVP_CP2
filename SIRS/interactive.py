@@ -112,6 +112,7 @@ def readArgs(args, params):
                 exit()
         else:
             print("Key {} not recognised. Ignoring.".format(args[i]))
+            i += 2
     params.update(updates)
         
         

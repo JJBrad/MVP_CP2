@@ -11,8 +11,9 @@ params = {"X Dimension":50,
           "Initial":None,
           "UpdateRate":300,
           "Seed": None,
-          "tMax" : 10000,
-          "Measure" : True
+          "tMax" : 1000,
+          "Measure" : False,
+          "Animate" : True
           }
 
 # Get input from command line
@@ -25,7 +26,14 @@ lattice = lat.lattice(params["X Dimension"],
                       initialState=params["Initial"],
                       measure=params["Measure"])
 
-lattice.display(tMax=params["tMax"], interval=params["UpdateRate"])
+if not (params["Animate"] or params["Measure"]):
+    print("Either animate or measure must be true.")
+    exit()
+
+if params["Animate"]:
+    lattice.display(tMax=params["tMax"], interval=params["UpdateRate"])
+elif params["Measure"]:
+    lattice.run(tMax=params["tMax"])
 
 if params["Measure"]:
     
@@ -35,17 +43,20 @@ if params["Measure"]:
     
     # Get the x and y c.o.m values as well as times
     comArr = np.array(lattice.COMList)
-    x = comArr[:,0]
-    y = comArr[:,1]
-    t = lattice.tList
+    xFull = comArr[:,0]
+    yFull = comArr[:,1]
+    tFull = lattice.tList
     # NaNs should occur in same place at x and y
     # Keep only up to first NaN, could update to keep over longest range
-    if np.argwhere(np.isnan(x)).size > 0:
-        maxInd = np.argwhere(np.isnan(x))[0,0]
-        x = x[0:maxInd]
-        y = y[0:maxInd]
-        t = t[0:maxInd]
-    
+    if np.argwhere(np.isnan(xFull)).size > 0:
+        maxInd = np.argwhere(np.isnan(xFull))[0,0]
+        x = xFull[0:maxInd] - xFull[0]
+        y = yFull[0:maxInd] - yFull[0]
+        t = tFull[0:maxInd]
+    else:
+        x = xFull - xFull[0]
+        y = yFull - yFull[0]
+        t = tFull
     # Initial guess for fitting
     p0 = [0.3, 0.]
     
@@ -66,9 +77,12 @@ if params["Measure"]:
     # Plot fit
     off = np.sqrt(xParams[1]**2. + yParams[1]**2.)
     tFit = np.array([min(t)*0.97, max(t)*1.03]) # Since it's linear only need two points
-    vFit = fitFunc(tFit, totVel, off)
+    vFit = fitFunc(tFit, totVel, -off)
     
-    pyplot.plot(t, np.sqrt(np.square(x) + np.square(y)), "kx")
+    pyplot.plot(tFull, np.sqrt(np.square(xFull - xFull[0]) + np.square(yFull - yFull[0])), "kx")
     pyplot.plot(tFit, vFit, "r-")
-    
+    pyplot.xlabel("Time")
+    pyplot.ylabel("Distance from Starting Point")
     pyplot.show()
+    if params["Animate"]:
+        print("#"*40 + "\nNote: If animation was exited manually then an error sometimes appears above.\nDisregard this error.\n" + "#"*40)

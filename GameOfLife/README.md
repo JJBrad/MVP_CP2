@@ -11,11 +11,12 @@ Usage: python Ising.py <Tags>
 Optional tags:
 -x <value>        Lattice x dimension.
 -y <value>        Lattice y dimension, defaults to match x.
+-rs <value>       Set random seed (for generation).
 -i <path>         Path to png or txt file with initial state of lattice. This overwrites x/y.
 -r <value>        Rate of updates in ms.
--rs <value>       Set random seed.
 -N <values>       Number of sweeps to perform.
--M <Y/N>          Measure C.o.M of system and save to "CoM.txt". This will overwrite.
+-M <Y/N>          Measure C.o.M of system and plot distance travelled.
+-A <Y/N>          Show animation
 -H                Print this dialogue and exit.
 
 Example with 40 x 25 lattice with 100 sweeps:
